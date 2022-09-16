@@ -1,0 +1,10 @@
+﻿@{
+    ViewData["Title"] = "Результаты поиска";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Выполнено!</h1>
+    <p>@ViewData["orderMessage"]</p>
+    <p>Дата: @DateTime.Now.ToLongDateString()</p>
+    <a href="@Url.Action("Index", "Library")">Вернуться на главную</a>
+</div>

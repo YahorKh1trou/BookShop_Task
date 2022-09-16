@@ -1,0 +1,31 @@
+﻿@model OrderModel
+
+@{
+    ViewData["Title"] = "Добавление книги";
+}
+
+<h1>Добавление книги</h1>
+    <form action="@Url.Action("CreateBook", "Admin")" method="post">
+        <div class="form-group col-md-5">
+            <input type="text" placeholder = "Введите имя" name="name" id="name"/>
+        </div>
+        <div class="form-group col-md-5">
+             <input type="text" placeholder = "Введите фамилию" name="lastname" id="lastname"/>
+        </div>
+        <div class="form-group col-md-5">
+            <input type="text" placeholder = "Введите отчество" name="patro" id="patro"/>
+        </div>
+        <div class="form-group col-md-5">
+            <input type="text" placeholder = "Введите дату рождения" name="birthdate" id="birthdate"/>
+        </div>
+        <div class="form-group col-md-5">
+            <input type="text" placeholder = "Введите название книги" name="bookname" id="bookname"/>
+        </div>
+        <div class="form-group col-md-5">
+            <input type="text" placeholder = "Введите год написания" name="year" id="year"/>
+        </div>
+        <div class="form-group col-md-5">
+            <input type="text" placeholder = "Введите цену" name="price" id="price"/>
+        </div>
+        <button class="btn btn-success" type="submit">Добавить</button>
+    </form>

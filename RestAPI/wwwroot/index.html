@@ -1,0 +1,443 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Список книг</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.0/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="userInfo">
+        <p>Вы вошли как: <span id="userName"></span></p>
+        <input type="button" value="Выйти" id="logOut" />
+        <input type="submit" id="getDataByLogin" value="Данные по логину" />
+        <input type="submit" id="getDataByRole" value="Данные по роли" />
+        <input type="hidden" name="id" value="0" />
+        <div class="form-group col-md-5">
+            <label>Добавлено книг за текущую сессию:</label>
+            <strong></strong>
+        </div>
+        <h2>Список книг</h2>
+        <form name="bookFormm">
+            <div class="form-group col-md-5">
+                <label for="name">Имя:</label>
+                <input class="form-control" name="name" />
+            </div>
+            <div class="form-group col-md-5">
+                <label for="lastname">Фамилия:</label>
+                <input class="form-control" name="lastname" />
+            </div>
+            <div class="form-group col-md-5">
+                `
+                <label for="patro">Отчество:</label>
+                <input class="form-control" name="patro" />
+            </div>
+            <div class="form-group col-md-5">
+                <label for="birthdate">Дата рождения:</label>
+                <input class="form-control" name="birthdate" />
+            </div>
+            <div class="form-group col-md-5">
+                <label for="bookname">Название книги:</label>
+                <input class="form-control" name="bookname" />
+            </div>
+            <div class="form-group col-md-5">
+                <label for="year">Год написания:</label>
+                <input class="form-control" name="year" type="number" />
+            </div>
+            <div class="panel-body">
+                <button type="submit" id="submit" class="btn btn-primary">Сохранить</button>
+                <a id="reset" class="btn btn-primary">Сбросить</a>
+            </div>
+        </form>
+        <table class="table table-condensed table-striped  col-md-6">
+            <thead><tr><th>Id</th><th>Имя</th><th>Фамилия</th><th>Отчество</th><th>Дата рождения</th><th>Название книги</th><th>Год написания</th><th></th></tr></thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="loginForm">
+        <h3>Вход на сайт</h3>
+        <label>Введите email</label><br />
+        <input type="email" id="emailLogin" /> <br /><br />
+        <label>Введите пароль</label><br />
+        <input type="password" id="passwordLogin" /><br /><br />
+        <input type="submit" id="submitLogin" value="Логин" />
+    </div>
+
+    <div id="registerForm">
+        <h3>Регистрация</h3>
+        <label>Введите свой email</label><br />
+        <input type="email" id="emailRegister" /> <br /><br />
+        <label>Придумайте пароль</label><br />
+        <input type="password" id="passwordRegister" /><br /><br />
+        <input type="submit" id="submitRegister" value="Зарегистрироваться" />
+    </div>
+
+    <script>
+        var tokenKey = "accessToken";
+
+        // Получение всех книг
+        var savedcount = sessionStorage.getItem("storecount");
+        var el = document.querySelector("strong");
+        if (savedcount != null) {
+            el.innerHTML = savedcount;
+        } else {
+            el.innerHTML = "0";
+        }
+        async function GetBooks() {
+            const token = sessionStorage.getItem(tokenKey);
+            // отправляет запрос и получаем ответ
+            const response = await fetch("/api/books", {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Authorization": "Bearer " + token  // передача токена в заголовке
+                }
+            });
+            // если запрос прошел нормально
+            if (response.ok === true) {
+                // получаем данные
+                const books = await response.json();
+                let rows = document.querySelector("tbody");
+                books.forEach(book => {
+                    // добавляем полученные элементы в таблицу
+                    rows.append(row(book));
+                });
+            }
+        }
+        // Получение одной книги
+        async function GetBook(id) {
+            const token = sessionStorage.getItem(tokenKey);
+            const response = await fetch("/api/books/" + id, {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Authorization": "Bearer " + token  // передача токена в заголовке
+                }
+            });
+            if (response.ok === true) {
+                const book = await response.json();
+                const form = document.forms["bookFormm"];
+
+                form.elements["id"] = book.id;
+                form.elements["name"].value = book.name;
+                form.elements["lastname"].value = book.lastname;
+                form.elements["patro"].value = book.patro;
+                form.elements["birthdate"].value = book.birthdate;
+                form.elements["bookname"].value = book.bookname;
+                form.elements["year"].value = book.year;
+            }
+        }
+        // Добавление книги
+        async function CreateBook(bookName, bookLastname, bookPatro, bookBirthdate, bookBookname, bookYear, bookPrice) {
+            const token = sessionStorage.getItem(tokenKey);
+            bookPrice = 30;
+            const response = await fetch("api/books", {
+                method: "POST",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token  // передача токена в заголовке
+                },
+                body: JSON.stringify({
+                    name: bookName,
+                    lastname: bookLastname,
+                    patro: bookPatro,
+                    birthdate: bookBirthdate,
+                    bookname: bookBookname,
+                    year: parseInt(bookYear, 10),
+                    price: bookPrice
+                })
+            });
+            if (response.ok === true) {
+                const book = await response.json();
+                reset();
+                document.querySelector("tbody").append(row(book));
+                if (book.counter != null) {
+                    sessionStorage.setItem("storecount", book.counter);
+                    var el = document.querySelector("strong");
+                    el.innerHTML = sessionStorage.getItem("storecount");
+                }
+            }
+        }
+
+        // Добавление пользователя
+        async function CreatePerson(personLogin, personPassword, personRole) {
+//            const token = sessionStorage.getItem(tokenKey);
+            const response = await fetch("api/values", {
+                method: "POST",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+//                    "Authorization": "Bearer " + token  // передача токена в заголовке
+                },
+                body: JSON.stringify({
+                    login: personLogin,
+                    password: personPassword,
+                    role: personRole,
+                })
+            });
+            if (response.ok === true) {
+                document.getElementById("registerForm").style.display = "none";
+            }
+        }
+
+        async function RegisterPerson() {
+            var roles = "admin";
+            const response = await fetch("/api/values", {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json"
+                }
+            });
+            // если запрос прошел нормально
+            if (response.ok === true) {
+                // получаем данные
+                const people = await response.json();
+                if (people.id != null) {
+                    roles = "user";
+                }
+            }
+
+            const login = document.getElementById("emailRegister").value;
+            const password = document.getElementById("passwordRegister").value;
+            const role = roles;
+            CreatePerson(login, password, role);
+        }
+
+        // Изменение книги
+        async function EditBook(bookId, bookName, bookLastname, bookPatro, bookBirthdate, bookBookname, bookYear) {
+            const token = sessionStorage.getItem(tokenKey);
+            const response = await fetch("api/books", {
+                method: "PUT",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token  // передача токена в заголовке
+                },
+                body: JSON.stringify({
+                    id: bookId,
+                    name: bookName,
+                    lastname: bookLastname,
+                    patro: bookPatro,
+                    birthdate: bookBirthdate,
+                    bookname: bookBookname,
+                    year: parseInt(bookYear, 10)
+                })
+            });
+            if (response.ok === true) {
+                const book = await response.json();
+                reset();
+                document.querySelector("tr[data-rowid='" + book.id + "']").replaceWith(row(book));
+            }
+        }
+        // Удаление книги
+        async function DeleteBook(id) {
+            const token = sessionStorage.getItem(tokenKey);
+            const response = await fetch("/api/books/" + id, {
+                method: "DELETE",
+                headers: {
+                    "Accept": "application/json",
+                    "Authorization": "Bearer " + token  // передача токена в заголовке
+                }
+            });
+            if (response.ok === true) {
+                const book = await response.json();
+                document.querySelector("tr[data-rowid='" + book.id + "']").remove();
+            }
+        }
+
+        // сброс формы
+        function reset() {
+            const form = document.forms["bookFormm"];
+            form.reset();
+            //            form.elements["id"].value = 0;
+            form.elements["id"] = null;
+        }
+
+        // создание строки для таблицы
+        function row(book) {
+
+            const tr = document.createElement("tr");
+            tr.setAttribute("data-rowid", book.id);
+
+            const idTd = document.createElement("td");
+            idTd.append(book.id);
+            tr.append(idTd);
+
+            const nameTd = document.createElement("td");
+            nameTd.append(book.name);
+            tr.append(nameTd);
+
+            const lastnameTd = document.createElement("td");
+            lastnameTd.append(book.lastname);
+            tr.append(lastnameTd);
+
+            const patroTd = document.createElement("td");
+            patroTd.append(book.patro);
+            tr.append(patroTd);
+
+            const birthdateTd = document.createElement("td");
+            birthdateTd.append(book.birthdate);
+            tr.append(birthdateTd);
+
+            const booknameTd = document.createElement("td");
+            booknameTd.append(book.bookname);
+            tr.append(booknameTd);
+
+            const yearTd = document.createElement("td");
+            yearTd.append(book.year);
+            tr.append(yearTd);
+
+            const linksTd = document.createElement("td");
+
+            const editLink = document.createElement("a");
+            editLink.setAttribute("data-id", book.id);
+            editLink.setAttribute("style", "cursor:pointer;padding:15px;");
+            editLink.append("Изменить");
+            editLink.addEventListener("click", e => {
+
+                e.preventDefault();
+                GetBook(book.id);
+            });
+            linksTd.append(editLink);
+
+            const removeLink = document.createElement("a");
+            removeLink.setAttribute("data-id", book.id);
+            removeLink.setAttribute("style", "cursor:pointer;padding:15px;");
+            removeLink.append("Удалить");
+            removeLink.addEventListener("click", e => {
+
+                e.preventDefault();
+                DeleteBook(book.id);
+            });
+
+            linksTd.append(removeLink);
+            tr.appendChild(linksTd);
+
+            return tr;
+        }
+        // сброс значений формы
+        document.getElementById("reset").click(function (e) {
+
+            e.preventDefault();
+            reset();
+        })
+
+        // отправка формы
+        document.forms["bookFormm"].addEventListener("submit", e => {
+            e.preventDefault();
+            const form = document.forms["bookFormm"];
+            const id = form.elements["id"];
+            const name = form.elements["name"].value;
+            const lastname = form.elements["lastname"].value;
+            const patro = form.elements["patro"].value;
+            const birthdate = form.elements["birthdate"].value;
+            const bookname = form.elements["bookname"].value;
+            const year = form.elements["year"].value;
+            if (id == null)
+                CreateBook(name, lastname, patro, birthdate, bookname, year);
+            else
+                EditBook(id, name, lastname, patro, birthdate, bookname, year);
+        });
+
+        // отпавка запроса к контроллеру AccountController для получения токена
+        async function getTokenAsync() {
+
+            // получаем данные формы и фомируем объект для отправки
+            const formData = new FormData();
+            formData.append("grant_type", "password");
+            formData.append("username", document.getElementById("emailLogin").value);
+            formData.append("password", document.getElementById("passwordLogin").value);
+
+            // отправляет запрос и получаем ответ
+            const response = await fetch("/token", {
+                method: "POST",
+                headers: { "Accept": "application/json" },
+                body: formData
+            });
+            // получаем данные
+            const data = await response.json();
+
+            // если запрос прошел нормально
+            if (response.ok === true) {
+
+                // изменяем содержимое и видимость блоков на странице
+                document.getElementById("userName").innerText = data.username;
+                document.getElementById("userInfo").style.display = "block";
+                document.getElementById("loginForm").style.display = "none";
+                document.getElementById("registerForm").style.display = "none";
+                // сохраняем в хранилище sessionStorage токен доступа
+                sessionStorage.setItem(tokenKey, data.access_token);
+                console.log(data.access_token);
+
+                // загрузка пользователей
+                GetBooks();
+            }
+            else {
+                // если произошла ошибка, из errorText получаем текст ошибки
+                console.log("Error: ", response.status, data.errorText);
+            }
+        };
+        // отправка запроса к контроллеру ValuesController
+        async function getData(url) {
+            const token = sessionStorage.getItem(tokenKey);
+
+            const response = await fetch(url, {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Authorization": "Bearer " + token  // передача токена в заголовке
+                }
+            });
+            if (response.ok === true) {
+
+                const data = await response.json();
+                alert(data)
+            }
+            else
+                console.log("Status: ", response.status);
+        };
+
+        // получаем токен
+        document.getElementById("submitLogin").addEventListener("click", e => {
+
+            e.preventDefault();
+            getTokenAsync();
+        });
+
+        // условный выход - просто удаляем токен и меняем видимость блоков
+        document.getElementById("logOut").addEventListener("click", e => {
+
+            e.preventDefault();
+            document.getElementById("userName").innerText = "";
+            document.getElementById("userInfo").style.display = "none";
+            document.getElementById("loginForm").style.display = "block";
+            sessionStorage.removeItem(tokenKey);
+        });
+
+        document.getElementById("submitRegister").addEventListener("click", e => {
+
+            e.preventDefault();
+            RegisterPerson();
+
+            //           const form = document.forms["registerForm"];
+        });
+
+        // кнопка получения имя пользователя  - /api/values/getlogin
+        document.getElementById("getDataByLogin").addEventListener("click", e => {
+
+            e.preventDefault();
+            getData("/api/values/getlogin");
+        });
+
+        // кнопка получения роли  - /api/values/getrole
+        document.getElementById("getDataByRole").addEventListener("click", e => {
+
+            e.preventDefault();
+            getData("/api/values/getrole");
+        });
+    </script>
+</body>
+</html>

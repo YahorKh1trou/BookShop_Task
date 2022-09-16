@@ -1,0 +1,55 @@
+﻿@model OrderModel
+
+@{
+    ViewData["Title"] = "Корзина";
+}
+
+
+<h1>Корзина</h1>
+    <form action="@Url.Action("Create", "Ordermodel")" method="post">
+    <table class="table table-sm table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Номер</th>
+                <th scope="col">Название</th>
+                <th scope="col">Автор</th>
+                <th scope="col">Количесвто</th>
+                <th scope="col">Цена</th>
+            </tr>
+        </thead>
+        <tbody>
+            <input type="hidden" name="order.totalcount" value="@Model.TotalCount"/>
+            <input type="hidden" name="order.totalprice" value="@Model.TotalPrice"/>
+            @for (int i = 0; i < Model.Items.Length; i++)
+            {
+                <tr>
+                    <input type="hidden" name="orderitems[@i].bookid" value="@Model.Items[i].BookId"/>
+                    <input type="hidden" name="orderitems[@i].bookname" value="@Model.Items[i].Bookname"/>
+                    <input type="hidden" name="orderitems[@i].lastname" value="@Model.Items[i].Lastname"/>
+                    <input type="hidden" name="orderitems[@i].count" value="@Model.Items[i].Count"/>
+                    <input type="hidden" name="orderitems[@i].price" value="@Model.Items[i].Price"/>
+                    <td class="text-right">@(i + 1)</td>
+                    <td>@Model.Items[i].Bookname</td>
+                    <td>@Model.Items[i].Lastname</td>
+                    <td class="text-right">@Model.Items[i].Count</td>
+                    <td class="text-right">@Model.Items[i].Price</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3" class="text-right">Итого</td>
+                <td class="text-right">@Model.TotalCount</td>
+                <td class="text-right">@Model.TotalPrice</td>
+            </tr>
+        </tfoot>
+    </table>
+    <button class="btn btn-success" type="submit">Заказать</button>
+</form>
+
+@*<form action="@Url.Action("Create", "Ordermodel")" method="post">
+    <input type="text" name="order[0].bookid" value="@Model.Items[0].BookId"/>
+    <input type="text" name="order[1].bookid" value="@Model.Items[1].BookId"/>
+    <button class="btn btn-success" type="submit">Заказать</button>
+</form>*@
+

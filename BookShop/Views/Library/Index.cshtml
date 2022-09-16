@@ -1,0 +1,65 @@
+﻿@model IEnumerable<BookShop.Models.Book>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Список книг в наличии</h1>
+
+<form action="/author" method="get">
+     @Html.DropDownList("authors", (IEnumerable<SelectListItem>)ViewData["AuthorDropdown"])
+    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Найти по автору</button>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Lastname)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Patro)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Birthdate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Bookname)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Year)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Lastname)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Patro)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Birthdate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Bookname)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Year)
+            </td>
+            <td>
+                <a href="@Url.Action("Index", "Quote", new {id = item.Id})">Подробнее</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

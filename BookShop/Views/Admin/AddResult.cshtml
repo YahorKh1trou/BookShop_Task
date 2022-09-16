@@ -1,0 +1,10 @@
+﻿@{
+    ViewData["Title"] = "Результаты добавления книги";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Выполнено!</h1>
+    <p>@ViewData["addMessage"]</p>
+    <p>Дата: @DateTime.Now.ToLongDateString()</p>
+    <a href="@Url.Action("Index", "Library")">Вернуться на главную</a>
+</div>

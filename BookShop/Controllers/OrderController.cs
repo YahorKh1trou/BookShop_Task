@@ -20,6 +20,8 @@ namespace BookShop.Controllers
         {
             var bookIds = order.Items.Select(item => item.BookId);
             var allBooks = await _bookService.GetList(); //плохо, нужно будет переделать на уровне data
+
+            // all linq query should be written on one style, prefere extensions
             var foundBooks = from book in allBooks
                              join bookId in bookIds on book.Id equals bookId
                              select book;

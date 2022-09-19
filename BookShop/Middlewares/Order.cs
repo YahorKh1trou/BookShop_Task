@@ -2,6 +2,7 @@
 
 namespace BookShop.Middlewares
 {
+    // Why this is in middlewares?
     public class Order
     {
         public int Id { get; }

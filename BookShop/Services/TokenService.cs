@@ -23,6 +23,8 @@ namespace BookShop.Services
             }
         }
 
+        // you don't have to pass scope as parameters in such methods,
+        // scope is smth like ClientId, it persistent value that assosiated with your client
         public async Task<TokenResponse> GetToken(string scope)
         {
             var tokenResponse = await httpClient.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest

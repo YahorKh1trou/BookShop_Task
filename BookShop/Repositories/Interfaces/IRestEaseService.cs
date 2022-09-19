@@ -5,6 +5,8 @@ namespace BookShop.Repositories.Interfaces
 {
     public interface IRestEaseService
     {
+        // I think you can use real model in return type instead of string
+
         [Header("Authorization")]
         AuthenticationHeaderValue Authorization { get; set; }
 

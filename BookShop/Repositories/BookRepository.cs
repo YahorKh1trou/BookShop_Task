@@ -9,6 +9,12 @@ using System.Text;
 
 namespace BookShop.Repositories
 {
+    // You can try to implement work with token in such way:
+    // 1) Declare only 1 HttpContext for your requests
+    // 2) when you receive token 1st time set is in Authorization header of httpClient
+    // 3) use this token for each request
+    // 4) if you recieve 401 error - refresh or fetch new token and go to 2st step
+
     public class BookRepository : IRepository<Book>
     {
 //        private IHttpContextAccessor _contextAccessor;

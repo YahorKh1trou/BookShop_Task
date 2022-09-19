@@ -18,7 +18,8 @@ namespace Server
             services.AddDbContext<AspNetIdentityDbContext>(
                 options => options.UseSqlServer(connectionString)
             );
-
+            // move configs to Program.cs file
+            // do not mix them with db migrations, initialization, etc.
             services
                 .AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<AspNetIdentityDbContext>()

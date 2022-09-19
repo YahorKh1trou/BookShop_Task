@@ -10,6 +10,7 @@ using System.Security.Claims;
 
 namespace RestAPI.Controllers
 {
+    // I think you have missed one projet "Services" in your commit
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]

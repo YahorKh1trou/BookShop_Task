@@ -17,6 +17,7 @@ namespace BookShop.Controllers
         }
 
         [HttpPost]
+        // I suppose you can use class-modek in parameter with attribute [FromForm]
         public async Task<IActionResult> CreateBook([FromForm] string name, [FromForm] string lastname, [FromForm] string patro, [FromForm] string birthdate,
             [FromForm] string bookname, [FromForm] int year, [FromForm] int price)
         {

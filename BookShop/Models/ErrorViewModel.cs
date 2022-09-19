@@ -4,6 +4,7 @@ namespace BookShop.Models
     {
         public string? RequestId { get; set; }
 
+        // better use IsNullOrWhiteSpace method
         public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
     }
 }
